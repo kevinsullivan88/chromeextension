@@ -1,16 +1,57 @@
-{
-    "manifest_version": 3,
-    "name": "Cheeky summaries",
-    "version": "1.0.0",
-    "description": "Summarizing your web pages for you",
-    "icons": {
-      "48": "images/icon-48.png", // come back to this
-      "128": "images/icon-128.png", // come back to this
-      "permissions": [
+// {
+//     "manifest_version": 3,
+//     "name": "Cheeky summaries",
+//     "version": "1.0.0-alpha",
+//     "description": "Summarizing your web pages for you",
+//     "icons": {
+//       "48": "images/icon-48.png", // come back to this
+//       "128": "images/icon-128.png", // come back to this
+//     }
+//       "permissions": [
         
-        "active tab",
-        "storage"
+//         "activeTab",
+//         "storage",
+//         "tabs",
+//         "https://api.openai.com/"
 
-      ],
+//       ]
+//       "background": {
+//         "service_worker": "background.js"
+//       },
+
+//   }
+
+
+{
+  "manifest_version": 3,
+  "name": "Webpage Synopsis Generator",
+  "version": "1.0",
+  "description": "Generates a brief synopsis of the current webpage using OpenAI's API.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://api.openai.com/"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
     }
-  }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ]
+}
