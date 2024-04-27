@@ -43,7 +43,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             headers: {
                 'Content-Type': 'application/json',
                 // pass the API key
-                'Authorization': 
+                'Authorization': apiKey
             },
 
             // converting JSON to a string

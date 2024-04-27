@@ -5,11 +5,13 @@
   "description": "Generates a brief synopsis of the current webpage using OpenAI's API.",
   "permissions": [
     "activeTab",
-    "storage",
-    "https://api.openai.com/"
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.openai.com/*"
   ],
   "background": {
-    // "service_worker": "background.js"
+    "service_worker": "background.js"
   },
   "action": {
     "default_popup": "index.html"
