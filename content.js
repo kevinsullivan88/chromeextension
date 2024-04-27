@@ -9,11 +9,11 @@ In summary, content.js typically handles tasks related to the current web page, 
 interaction with page elements, and page-specific actions. It operates within the context of individual web pages and is isolated from the extension's global environment.
 */
 
-// 1. Send a message to the service worker requesting the user's data
-chrome.runtime.sendMessage({action: 'get-user-data'}, (response) => {
-    // 3. Got an asynchronous response with the data from the service worker
-    console.log('received user data', response);
-  });
+// // 1. Send a message to the service worker requesting the user's data
+// chrome.runtime.sendMessage({action: 'get-user-data'}, (response) => {
+//     // 3. Got an asynchronous response with the data from the service worker
+//     console.log('received user data', response);
+//   });
 
 
 
@@ -31,3 +31,34 @@ chrome.runtime.sendMessage({action: 'get-user-data'}, (response) => {
 
 // Send the text content to the background script
 //chrome.runtime.sendMessage({ textContent: pageText });
+
+
+// Listen for the command from the background script to start text extraction
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "extract-text") {
+      // Extract text from the web page's body
+      const pageText = document.body.innerText;
+
+      // Send the extracted text back to the background script
+      chrome.runtime.sendMessage({
+          action: "get-page-text",
+          text: pageText
+      });
+
+      // Optional: respond back to the background script if needed
+      sendResponse({status: "Text sent"});
+  }
+  return true;  // Indicate that we're asynchronously sending a response and keep the channle open
+});
+
+// Optionally, automatically extract text when the script is injected
+const autoExtractText = () => {
+  const text = document.body.innerText;
+  chrome.runtime.sendMessage({
+      action: "get-page-text",
+      text: text
+  });
+};
+
+// Uncomment the next line if you want the script to automatically extract text when loaded
+// autoExtractText();

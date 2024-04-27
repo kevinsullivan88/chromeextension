@@ -1,103 +1,49 @@
-// What goes in this file:
-
-/*
-- Message Handling: background.js is often used for managing extension-wide functionality, such as handling messages between different components of the extension.
-- Extension Lifecycle: It's responsible for tasks like managing the extension's lifecycle (registration, installation, activation, etc.).
-- Global State: It's a good place to store global state or variables that need to be accessed across different parts of the extension.
-- Interactions with Browser APIs: background.js can interact with various browser APIs, such as storage APIs, tabs APIs, and alarms APIs.
-
-In summary, background.js typically handles extension-wide functionality, communication between different components, and interactions with browser APIs.
-*/
-
-// first function that kicks off the process
-
+// Listener for when the extension is installed or updated
 chrome.runtime.onInstalled.addListener((details) => {
-    // confirm installation is happening
-    console.log("Extension installed.");
-
-    // Sends a message to the popup.js file that will listen for "updatePopupUI"
-    chrome.runtime.sendMessage({ action: "updatePopupUI" });
+    console.log("Extension successfully installed!", details.reason);
+    // Further initialization code can go here
 });
 
-// writing a function that we can invoke when the extension is clicked
-// which will send the HTTP post request and collect the summary
+// Listener to trigger content script to collect page text when the extension icon is clicked
+chrome.action.onClicked.addListener((tab) => {
+    // Ensures the content script is injected into the tab
+    chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        files: ['content.js']
+    }, () => {
+        if (chrome.runtime.lastError) {
+            console.error('Script injection failed: ', chrome.runtime.lastError.message);
+        }
+    });
+});
 
-function contentSummarize(){
-//get the page text
-const pageText = document.body.innerText;
-
-// use send message to send pageText to listener
-chrome.runtime.sendMessage({textContent: pageText});
-}
-
-
+//listener to receive text from content script and send it to OpenAI
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // Check if the message contains the text content
-    if (message.action === `get-user-data`) {
-        const pageText = message.textContent;
-        console.log("Text content of the current page:", pageText);
-        // Send the text content to the API endpoint
+    if (message.action === "get-page-text") {
+        const pageText = message.text;
 
+        //environment variables work for local devving but need something more secure here
+        const apiKey = process.env.OPENAI_API_KEY; 
+
+        //send the text content to the OpenAI API endpoint
         fetch('https://api.openai.com/v1/engines/davinci/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // pass the API key
-                'Authorization': apiKey
+                'Authorization': `Bearer ${apiKey}`
             },
-
-            // converting JSON to a string
-            body: JSON.stringify({ text: pageText })
+            body: JSON.stringify({ prompt: pageText, max_tokens: 150 })
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Response from API:", data);
-            // TO-DO - inject this text into the popUp UI
+            // Send the summary back to the popup UI
+            chrome.runtime.sendMessage({action: "updatePopupUI", summary: data.choices[0].text});
         })
         .catch(error => {
-            console.error("Error:", error);
+            console.error("Error with OpenAI API:", error);
         });
+
+        //keep the message channel open for asynchronous response
+        return true;
     }
 });
-
-// when the extension is clicked on a certain tab, invoke the summarize function
-chrome.action.onClicked.addListener((tab) => {
-    contentSummarize()
-
-})
-
-
-
-
-
-// Add an event listener for when the extension's icon is clicked in the toolbar.
-
-/*
-
-Reason for removing - we already have a function we want to use when the extension is clicked,
-so we just want to invoke that.
-Also when asking about "try", GPT said:
-"However, upon closer inspection, it seems unnecessary to use a try-catch block in this context, as setting up an event listener like chrome.action.onClicked.addListener() 
-is not likely to throw errors under normal circumstances."
-
-try {
-
-    
-    chrome.action.onClicked.addListener((tab) => {
-        // `tab` contains information about the current active tab
-
-        // This function is executed in the context of the current active tab.
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id }, // Specifies which tab to target with the script execution
-            function: function() {
-                // This function is injected and executed in the current tab
-                // TODO - update this to actually run the function
-                alert('Hello from your Chrome Extension!');
-            }
-        });
-    });
-} catch (error) {
-    // Catches and logs any errors that occur during the event listener setup or script execution
-    console.error('Error in background script:', error);
-}
-*/
