@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     padding: 10px;
     width: 300px;
 }
@@ -7,10 +7,12 @@ body {
 h1 {
     color: #333;
     font-size: 18px;
+    font-family: 'Roboto', sans-serif;
 }
 
 #refresh-button {
-    background-color: #4CAF50;
+    background-color: #11ec18;
+    font-family: 'Roboto', sans-serif;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -20,15 +22,33 @@ h1 {
     font-size: 16px;
     margin: 10px 0;
     cursor: pointer;
+    border-radius: 20px; 
+    transition: background-color 0.3s; 
+    font
+    
+}
+
+#refresh-button:hover {
+    background-color: #357ebd; /* Darker shade of blue on hover */
 }
 
 #summary-container {
     margin-top: 10px;
     padding: 10px;
-    background-color: #f2f2f2;
-    border-radius: 5px;
+    background-color: #fdfdfd; 
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    min-height: 50px; 
+    max-height: 200px; 
+    overflow-y: auto;
 }
 
 #summary-text {
     color: #333;
+    font-family: 'Roboto', sans-serif;
+    
+}
+
+p {
+    font-family: 'Roboto', sans-serif; 
 }

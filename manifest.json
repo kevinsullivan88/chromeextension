@@ -3,6 +3,10 @@
   "name": "Webpage Synopsis Generator",
   "version": "1.0",
   "description": "Generates a brief synopsis of the current webpage using OpenAI's API.",
+  "icons": {
+    "128": "assets/icon128.png",
+    "48": "assets/icon48.png"
+  },
   "permissions": [
     "activeTab",
     "storage"
