@@ -1,0 +1,16 @@
+
+{
+  "name": "kevinchromedupe",
+  "version": "1.0-alpha",
+  "description": "",
+  "main": "openai-test.js",
+  "type": "module",
+  "scripts": {
+    "start": "node openai-test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "4.38.5"
+  }
+}
